@@ -1,0 +1,39 @@
+@startuml
+actor Client
+participant "Фронт-офис" as FrontOffice
+participant "Кол-центр" as CallCenter
+participant "CRM (система кол-центра)" as CRM
+participant "АБС" as ABS
+participant "Бэк-офис депозитов" as BackOfficeDeposits
+participant "Бэк-офис кредитов" as BackOfficeCredits
+participant "Excel"
+participant "Email"
+participant "СМС-шлюз" as SMS
+
+== Сценарий 1: Заявка через звонок ==
+
+Client -> CallCenter : звонок с вопросом о вкладе
+CallCenter -> CRM : создать обращение
+CRM -> ABS : передать заявку
+ABS -> BackOfficeDeposits : задача рассчитать ставку
+BackOfficeDeposits -> Excel : расчёт ставки
+Excel -> BackOfficeDeposits : ставка готова
+BackOfficeDeposits -> ABS : внести ставку
+ABS -> SMS : отправить клиенту СМС
+
+== Сценарий 2: Клиент без звонка ==
+
+Client -> FrontOffice : обращение в отделение
+FrontOffice -> BackOfficeDeposits : письмо по email (узнать ставку)
+BackOfficeDeposits -> BackOfficeCredits : запрос на спецставку (если VIP)
+BackOfficeCredits -> Excel : расчёт кредитного риска
+Excel -> BackOfficeCredits : результат
+BackOfficeCredits -> BackOfficeDeposits : передаёт расчёт
+BackOfficeDeposits -> Excel : расчёт ставки
+Excel -> BackOfficeDeposits : ставка готова
+BackOfficeDeposits -> Email : отправить ставку
+Email -> FrontOffice : получить ставку
+FrontOffice -> ABS : создать вклад
+FrontOffice -> Client : выдать документы
+
+@enduml

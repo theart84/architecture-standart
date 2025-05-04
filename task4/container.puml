@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+
+Person(staff, "Сотрудник депозита/кредита", "Редактирует ставки")
+Person(operator, "Оператор кол-центра", "Читает ставки через UI")
+Person(partnerOperator, "Оператор партнёрского кол-центра", "Читает ставки из CSV")
+
+System_Boundary(coreBanking, "Информационная система банка «Стандарт»") {
+    Container(ratesService, "Сервис ставок", "C#", "CRUD ставок\nФормирует по крону файл для партнёров")
+    ContainerDb(ratesDb, "БД ставок", "MS SQL", "Хранение данных по ставкам")
+    Container(contactCenter, "Система кол-центра", "Java", "Просмотр ставок")
+    Container(fileExporter, "Выгрузка CSV", "С#", "Формирует файл для партнёров")
+}
+
+System_Ext(partnerCenter, "Партнёрский кол-центр", "Внешняя система, получает файл")
+
+Rel(staff, ratesService, "Управляет ставками", "HTTPS (TLS 1.2+)")
+Rel(operator, contactCenter, "Работает с клиентами", "UI")
+Rel(contactCenter, ratesService, "Запрашивает ставки", "REST API (HTTPS / TLS 1.2+)")
+Rel(ratesService, ratesDb, "Чтение/запись")
+Rel(ratesService, partnerCenter, "Передаёт файл", "CSV, Email/SFTP")
+Rel(partnerOperator, partnerCenter, "Скачивает файл", "HTTPS (TLS 1.2+)")
+
+@enduml

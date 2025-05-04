@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Context>
+
+Person(customer, "Клиент", "Пользователь интернет-банка или сайта")
+
+System_Boundary(standardBank, "Информационная система банка «Стандарт»") {
+    System(website, "Сайт", "Подача заявки на депозит для новых клиентов")
+    System(internetBank, "Интернет-банк", "Оформление депозитов авторизованными клиентами")
+    System(depositService, "Сервис заявок на депозит", "Обработка и маршрутизация заявок")
+    System(abs, "АБС", "Обработка заявок и расчёт ставок")
+    System(smsGateway, "СМС-шлюз", "Отправка уведомлений клиенту")
+}
+
+System_Ext(telecomProvider, "Телеком-оператор", "Отправка SMS клиентам")
+
+
+Rel(website, depositService, "REST API (HTTPS / TLS 1.2+)")
+Rel(internetBank, depositService, "REST API (HTTPS / TLS 1.2+)")
+
+Rel(depositService, abs, "Передача заявки", "Kafka")
+Rel(abs, smsGateway, "Отправка СМС", "REST API (HTTPS / TLS 1.2+)")
+Rel(customer, website, "Просмотр и подача заявки", "HTTPS (TLS 1.2+)")
+Rel(customer, internetBank, "Оформление депозита", "HTTPS (TLS 1.2+) + SMS")
+Rel(telecomProvider, customer, "СМС-уведомление", "SMS")
+@enduml
+
+Rel(smsGateway, telecomProvider, "Пересылка SMS", "HTTPS (TLS 1.2+)")
