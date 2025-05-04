@@ -6,7 +6,7 @@ Person(operator, "Оператор кол-центра", "Читает став�
 Person(partnerOperator, "Оператор партнёрского кол-центра", "Читает ставки из CSV")
 
 System_Boundary(coreBanking, "Информационная система банка «Стандарт»") {
-    Container(ratesService, "Сервис ставок", "C#", "CRUD ставок")
+    Container(ratesService, "Сервис ставок", "C#", "CRUD ставок\nФормирует по крону файл для партнёров")
     ContainerDb(ratesDb, "БД ставок", "MS SQL", "Хранение данных по ставкам")
     Container(contactCenter, "Система кол-центра", "Java", "Просмотр ставок")
     Container(fileExporter, "Выгрузка CSV", "С#", "Формирует файл для партнёров")
@@ -14,12 +14,11 @@ System_Boundary(coreBanking, "Информационная система бан
 
 System_Ext(partnerCenter, "Партнёрский кол-центр", "Внешняя система, получает файл")
 
-Rel(staff, ratesService, "Управляет ставками", "HTTPS")
+Rel(staff, ratesService, "Управляет ставками", "HTTPS (TLS 1.2+)")
 Rel(operator, contactCenter, "Работает с клиентами", "UI")
-Rel(contactCenter, ratesService, "Запрашивает ставки", "REST API")
+Rel(contactCenter, ratesService, "Запрашивает ставки", "REST API (HTTPS / TLS 1.2+)")
 Rel(ratesService, ratesDb, "Чтение/запись")
-Rel(fileExporter, ratesDb, "Читает ставки", "по расписанию")
-Rel(fileExporter, partnerCenter, "Передаёт файл", "CSV, Email/SFTP")
-Rel(partnerOperator, partnerCenter, "Скачивает файл", "HTTPS")
+Rel(ratesService, partnerCenter, "Передаёт файл", "CSV, Email/SFTP")
+Rel(partnerOperator, partnerCenter, "Скачивает файл", "HTTPS (TLS 1.2+)")
 
 @enduml

@@ -13,9 +13,9 @@ System_Boundary(bank, "Информационная система банка «
 System_Ext(partnerContactCenter, "Партнёрский кол-центр", "Внешняя система, получает ставки в CSV")
 
 Rel(staff, depositRatesService, "Обновляет ставки", "через UI")
-Rel(operator, contactCenterSystem, "Просматривает ставки", "REST API")
-Rel(contactCenterSystem, depositRatesService, "Получает актуальные ставки", "REST")
-Rel(partnerContactCenter, depositRatesService, "Получает файл со ставками", "CSV выгрузка (ежедневно)")
+Rel(operator, contactCenterSystem, "Просматривает ставки", "REST API (HTTPS / TLS 1.2+)")
+Rel(contactCenterSystem, depositRatesService, "Получает актуальные ставки", "REST API (HTTPS / TLS 1.2+)")
+Rel(depositRatesService,partnerContactCenter, "Передаёт файл", "CSV, Email/SFTP")
 Rel(partnerOperator, partnerContactCenter, "Работает с данными", "")
 
 @enduml

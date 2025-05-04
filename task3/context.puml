@@ -13,14 +13,15 @@ System_Boundary(standardBank, "Информационная система ба�
 
 System_Ext(telecomProvider, "Телеком-оператор", "Отправка SMS клиентам")
 
-Rel(customer, website, "Просмотр и подача заявки", "HTTPS")
-Rel(customer, internetBank, "Оформление депозита", "HTTPS + SMS")
 
-Rel(website, depositService, "REST API")
-Rel(internetBank, depositService, "REST API")
+Rel(website, depositService, "REST API (HTTPS / TLS 1.2+)")
+Rel(internetBank, depositService, "REST API (HTTPS / TLS 1.2+)")
 
 Rel(depositService, abs, "Передача заявки", "Kafka")
-Rel(abs, smsGateway, "Отправка СМС", "REST API")
-Rel(smsGateway, telecomProvider, "Пересылка SMS", "HTTPS")
+Rel(abs, smsGateway, "Отправка СМС", "REST API (HTTPS / TLS 1.2+)")
+Rel(customer, website, "Просмотр и подача заявки", "HTTPS (TLS 1.2+)")
+Rel(customer, internetBank, "Оформление депозита", "HTTPS (TLS 1.2+) + SMS")
 Rel(telecomProvider, customer, "СМС-уведомление", "SMS")
 @enduml
+
+Rel(smsGateway, telecomProvider, "Пересылка SMS", "HTTPS (TLS 1.2+)")
