@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Context>
+
+Person(operator, "Сотрудник кол-центра", "Основной кол-центр")
+Person(partnerOperator, "Сотрудник партнёрского кол-центра", "Работает во внешней системе")
+Person(staff, "Сотрудник депозита/кредита", "Обновляет ставки вручную")
+
+System_Boundary(bank, "Информационная система банка «Стандарт»") {
+    System(depositRatesService, "Сервис ставок", "Хранение, обновление и предоставление ставок")
+    System(contactCenterSystem, "Система кол-центра", "CRM и звонки, React + Spring Boot")
+}
+
+System_Ext(partnerContactCenter, "Партнёрский кол-центр", "Внешняя система, получает ставки в CSV")
+
+Rel(staff, depositRatesService, "Обновляет ставки", "через UI")
+Rel(operator, contactCenterSystem, "Просматривает ставки", "REST API")
+Rel(contactCenterSystem, depositRatesService, "Получает актуальные ставки", "REST")
+Rel(partnerContactCenter, depositRatesService, "Получает файл со ставками", "CSV выгрузка (ежедневно)")
+Rel(partnerOperator, partnerContactCenter, "Работает с данными", "")
+
+@enduml

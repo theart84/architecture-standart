@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Container>
+
+Person(customer, "Клиент", "Пользователь интернет-банка или сайта")
+
+System_Boundary(standardBank, "Информационная система банка «Стандарт»") {
+    Container(website, "Сайт", "PHP + React", "Подача заявки на депозит для новых клиентов")
+    Container(internetBank, "Интернет-банк", "ASP.NET MVC 4.5", "Интерфейс для подачи заявок авторизованными клиентами")
+    Container(depositService, "Сервис заявок на депозит", "Java / C#", "Обработка и маршрутизация заявок")
+    Container(queue, "Очередь сообщений", "Kafka", "Асинхронная передача заявок в АБС")
+    ContainerDb(depositDb, "БД заявок", "MS SQL", "Хранение поданных заявок")
+    ContainerDb(abs, "АБС (Oracle)", "Автоматизированная банковская система")
+    Container(smsService, "СМС-шлюз", "Сервис для отправки уведомлений")
+}
+
+System_Ext(telecomProvider, "Телеком оператор", "Внешний сервис телеком-оператора ")
+
+Rel(customer, website, "Просмотр и подача заявки", "HTTPS")
+Rel(customer, internetBank, "Подача заявки", "HTTPS + SMS-подтверждение")
+
+Rel(website, depositService, "REST API")
+Rel(internetBank, depositService, "REST API")
+
+Rel(depositService, depositDb, "Запись заявки")
+Rel(depositService, queue, "Публикация заявки", "Kafka topic")
+Rel(queue, abs, "Чтение и обработка", "PL/SQL процедуры")
+
+Rel(abs, smsService, "Отправка уведомлений", "REST API")
+Rel(smsService, telecomProvider, "Данные", "HTTPS")
+Rel(telecomProvider, customer, "Уведомления", "SMS")
+@enduml
